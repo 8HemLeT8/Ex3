@@ -16,6 +16,7 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -26,11 +27,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 public class GUI extends JFrame implements MouseListener {
-	public BufferedImage image ;
+	Dimension dimensionSize= new Dimension();
+	BufferedImage image ;
 	JMenuItem menuItem;
 	JMenuBar menuBar;
 	Image packmanImage ,fruitImage;
 	Game game =new Game();
+	double ratioWidth ;
+	double ratioHeight;
 	Iterator<Packman> itPac= game.packmans.iterator();
 	Iterator<Fruit> itFru = game.fruits.iterator();
 	boolean packmanORfruit ;
@@ -47,7 +51,9 @@ public class GUI extends JFrame implements MouseListener {
 		this.addMouseListener(this); //detect Mouse clicks (not used at the moment)
 		this.addComponentListener(new ComponentAdapter() { // detects window changing 
 			public void componentResized(ComponentEvent e) {
-
+				dimensionSize= e.getComponent().getSize();
+				ratioHeight=dimensionSize.getHeight()/image.getHeight();
+				ratioWidth = dimensionSize.getWidth()/image.getWidth();
 			}
 		});
 	}
@@ -81,7 +87,7 @@ public class GUI extends JFrame implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				loadFile();
-				
+
 			}
 		});
 		//Clear Method from the "Menu" menu
@@ -98,7 +104,7 @@ public class GUI extends JFrame implements MouseListener {
 				repaint();
 			}
 		});
-		//Adding packmans Listener through "Insert" menu
+		//Adding packmans listener through "Insert" menu
 		item5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -143,22 +149,22 @@ public class GUI extends JFrame implements MouseListener {
 			x = x - (r / 2+10);
 			y = y - (r / 2+10);
 			if(packmanORfruit&&enableAdd) {
-				Packman p = new Packman(x,y);    //need to add Packman (need to change pixels to deg)
+				Packman p = new Packman((int)(x/ratioWidth),(int)(y/ratioHeight));    //need to add Packman (need to change pixels to deg)
 				game.packmans.add(p);            //add the fruit to the game 
 			}
 			else if(enableAdd) {
-				Fruit f = new Fruit(x,y);
+				Fruit f = new Fruit((int)(x/ratioWidth),(int)(y/ratioHeight));
 				game.fruits.add(f);
 			}//END INNER IF	
 			itPac= game.packmans.iterator();  //for the repaint we need to draw every packman again
 			while(itPac.hasNext()) {
 				Packman pTemp = itPac.next();
-				g.drawImage(packmanImage,(int)pTemp.getLocationInPixels().x(),(int)pTemp.getLocationInPixels().y(),2*r,2*r,this);
+				g.drawImage(packmanImage,(int)(pTemp.getLocationInPixels().x()*ratioWidth),(int)(pTemp.getLocationInPixels().y()*ratioHeight),2*r,2*r,this);
 			}
 			itFru= game.fruits.iterator();
 			while(itFru.hasNext()) {
 				Fruit fTemp= itFru.next();
-				g.drawImage(fruitImage,(int)fTemp.getLocationInPixels().x(),(int)fTemp.getLocationInPixels().y(),2*r,2*r,this);
+				g.drawImage(fruitImage,(int)(fTemp.getLocationInPixels().x()*ratioWidth),(int)(fTemp.getLocationInPixels().y()*ratioHeight),2*r,2*r,this);
 			}
 		}
 	}
@@ -193,7 +199,7 @@ public class GUI extends JFrame implements MouseListener {
 	}
 	//End of MouseListner implements methods
 	public void loadFile() {
-//		try read from the file (Copied code from elizabeth )
+//		try read from the file (Copied code from Elizabeth )
         FileDialog fd = new FileDialog(this, "Open text file", FileDialog.LOAD);
         fd.setFile("*.csv");
         fd.setDirectory("C:");
