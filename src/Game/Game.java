@@ -9,12 +9,11 @@ import GIS.*;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-
 public class Game {
 	ArrayList<Fruit> fruits =new ArrayList();
 	ArrayList<Packman> packmans =new ArrayList();
 	String path="game_1543684662657.csv";
-	
+
 public void buildAgame(String filePath) {
 	ArrayList<ArrayList<String>> table  =new ArrayList<ArrayList<String>>();
 	ArrayList<Types> types = new ArrayList<Types>();

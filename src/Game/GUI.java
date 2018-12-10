@@ -35,7 +35,7 @@ public class GUI extends JFrame implements MouseListener {
 	Iterator<Fruit> itFru = game.fruits.iterator();
 	boolean packmanORfruit ;
 	boolean enableAdd;
-	int x =-1, y=-1; //
+	int x =-1, y=-1; 
 
 	public GUI() {
 		startGUI();
@@ -140,36 +140,27 @@ public class GUI extends JFrame implements MouseListener {
 		if(x!=-1 && y!=-1)
 		{
 			int r = 20;
-			x = x - (r / 2);
-			y = y - (r / 2);
+			x = x - (r / 2+10);
+			y = y - (r / 2+10);
 			if(packmanORfruit&&enableAdd) {
 				Packman p = new Packman(x,y);    //need to add Packman (need to change pixels to deg)
 				game.packmans.add(p);            //add the fruit to the game 
-				
-			//	g.drawImage(packmanImage, x,y , 2*r, 2*r, this);
 			}
 			else if(enableAdd) {
 				Fruit f = new Fruit(x,y);
 				game.fruits.add(f);
-			
-				//g.drawImage(fruitImage, x,y , 2*r, 2*r, this);
 			}//END INNER IF	
-			
 			itPac= game.packmans.iterator();  //for the repaint we need to draw every packman again
 			while(itPac.hasNext()) {
 				Packman pTemp = itPac.next();
-				
 				g.drawImage(packmanImage,(int)pTemp.getLocationInPixels().x(),(int)pTemp.getLocationInPixels().y(),2*r,2*r,this);
-
 			}
 			itFru= game.fruits.iterator();
 			while(itFru.hasNext()) {
-			Fruit fTemp= itFru.next();
-			g.drawImage(fruitImage,(int)fTemp.getLocationInPixels().x(),(int)fTemp.getLocationInPixels().y(),2*r,2*r,this);
+				Fruit fTemp= itFru.next();
+				g.drawImage(fruitImage,(int)fTemp.getLocationInPixels().x(),(int)fTemp.getLocationInPixels().y(),2*r,2*r,this);
 			}
 		}
-
-
 	}
 
 	@Override
@@ -215,21 +206,14 @@ public class GUI extends JFrame implements MouseListener {
         fd.setVisible(true);
         String folder = fd.getDirectory();
         String fileName = fd.getFile();
-        try {
-            FileReader fr = new FileReader(folder + fileName);
-            BufferedReader br = new BufferedReader(fr);
-            String str = new String();
-            for (int i = 0; str != null; i = i + 1) {
-                str = br.readLine();
-                if (str != null) {
-                    System.out.println(str);
-                }
-            }
-            br.close();
-            fr.close();
-        } catch (IOException ex) {
-            System.out.print("Error reading file " + ex);
-        }
+        System.out.println(folder+fileName);
+        game.buildAgame(folder + fileName);
+        x=1;
+        y=1;
+		System.out.println(game.fruits.get(2).getLocation());
+
+		System.out.println(game.fruits.get(2).getLocationInPixels());
+repaint();
 	}
 	public static void main (String [] args) {
 		new GUI();	
