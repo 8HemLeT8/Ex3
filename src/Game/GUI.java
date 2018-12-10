@@ -206,14 +206,13 @@ public class GUI extends JFrame implements MouseListener {
         fd.setVisible(true);
         String folder = fd.getDirectory();
         String fileName = fd.getFile();
-        System.out.println(folder+fileName);
+        if(fileName!=null) {
+        System.out.println("The file that opened is: "+folder+fileName);
         game.buildAgame(folder + fileName);
         x=1;
         y=1;
-		System.out.println(game.fruits.get(2).getLocation());
-
-		System.out.println(game.fruits.get(2).getLocationInPixels());
-repaint();
+        repaint();
+        }
 	}
 	public static void main (String [] args) {
 		new GUI();	
