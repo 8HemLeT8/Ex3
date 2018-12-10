@@ -1,8 +1,5 @@
 package Game;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -10,13 +7,19 @@ import java.awt.MenuItem;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
+
+import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import javax.swing.JMenuBar;
@@ -27,10 +30,12 @@ public class GUI extends JFrame implements MouseListener {
 	JMenuItem menuItem;
 	JMenuBar menuBar;
 	Image packmanImage ,fruitImage;
-
-	boolean packmanORfruit =true;
-	int x =-1, y=-1;
-
+	Game game =new Game();
+	Iterator<Packman> itPac= game.packmans.iterator();
+	Iterator<Fruit> itFru = game.fruits.iterator();
+	boolean packmanORfruit ;
+	boolean enableAdd;
+	int x =-1, y=-1; //
 
 	public GUI() {
 		startGUI();
@@ -48,13 +53,13 @@ public class GUI extends JFrame implements MouseListener {
 	}
 	private void startGUI() {
 		MenuBar menuBar = new MenuBar();
+		//defining "Menu" menu titles
 		Menu menu = new Menu("Menu"); 
-		MenuItem item1 = new MenuItem("Run");
-		MenuItem item2 = new MenuItem("Save");
-		MenuItem item3 = new MenuItem("Save Result");
-		MenuItem item4 = new MenuItem("Clear");
-
-
+		MenuItem item1 = new MenuItem("Load File");
+		MenuItem item2 = new MenuItem("Run");
+		MenuItem item3 = new MenuItem("Clear");
+		MenuItem item4 = new MenuItem("Save Result");
+		//setting main menu "Menu"
 		menuBar.add(menu);
 		menu.add(item1);
 		menu.add(item2);
@@ -62,27 +67,67 @@ public class GUI extends JFrame implements MouseListener {
 		menu.add(item4);
 		this.setMenuBar(menuBar);
 		menu.setFont(new Font("Courier New", Font.ITALIC, 12));
-		
-		MenuBar menuBar2= new MenuBar();
-		Menu menu2 =new Menu("Player Option");
-		MenuItem item5=new MenuItem("add fruits");
-		MenuItem item6=new MenuItem("add packmans");
-		MenuItem item7=new MenuItem("Run as file");
-		
-		menuBar2.add(menu2);
+		//defining "insert" menu titles
+		Menu menu2 =new Menu("Insert");
+		MenuItem item5=new MenuItem("Add Fruits");
+		MenuItem item6=new MenuItem("Add Packmans");
+		//setting "insert" menu
+		menuBar.add(menu2);
 		menu2.add(item5);
 		menu2.add(item6);
-		menu2.add(item7);
-		this.setMenuBar(menuBar2);
 		menu2.setFont(new Font("Courier New", Font.ITALIC, 12));
+		//Load File button Listener
+		item1.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadFile();
+				
+			}
+		});
+		//Clear Method from the "Menu" menu
+		item3.addActionListener(new ActionListener() {		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				x=-1;
+				y=-1;
+				enableAdd=false;
+				packmanORfruit=false;
+				
+				game.packmans.clear(); //not sure what to fill inside the 
+				game.fruits.clear();
+				repaint();
+			}
+		});
+		//Adding packmans Listener through "Insert" menu
+		item5.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				enableAdd=true;
+				if(packmanORfruit==true) packmanORfruit= false;
+			}
+
+		});
+
+		//Adding fruits Listener through "Insert" menu
+		item6.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				enableAdd=true;
+				if(packmanORfruit==false) packmanORfruit=true;
+
+			}
+
+		});
 
 
 
 
 		try {
 			image = ImageIO.read(new File("Ariel1.png"));
-			packmanImage=ImageIO.read(new File("Packman1.png"));
-			fruitImage =ImageIO.read(new File("Fruit1.png"));
+			packmanImage=ImageIO.read(new File("packman1.png"));
+			fruitImage =ImageIO.read(new File("fruit1.png"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -97,22 +142,35 @@ public class GUI extends JFrame implements MouseListener {
 			int r = 20;
 			x = x - (r / 2);
 			y = y - (r / 2);
-			if(packmanORfruit) {
-				g.drawImage(packmanImage, x, y,3*r,3*r,this);
-			}
-			else {
-				g.drawImage(fruitImage, x, y,2*r,2*r,this);
+			if(packmanORfruit&&enableAdd) {
+				Packman p = new Packman(x,y);    //need to add Packman (need to change pixels to deg)
+				game.packmans.add(p);            //add the fruit to the game 
 				
+			//	g.drawImage(packmanImage, x,y , 2*r, 2*r, this);
 			}
+			else if(enableAdd) {
+				Fruit f = new Fruit(x,y);
+				game.fruits.add(f);
+			
+				//g.drawImage(fruitImage, x,y , 2*r, 2*r, this);
+			}//END INNER IF	
+			
+			itPac= game.packmans.iterator();  //for the repaint we need to draw every packman again
+			while(itPac.hasNext()) {
+				Packman pTemp = itPac.next();
+				
+				g.drawImage(packmanImage,(int)pTemp.getLocationInPixels().x(),(int)pTemp.getLocationInPixels().y(),2*r,2*r,this);
 
+			}
+			itFru= game.fruits.iterator();
+			while(itFru.hasNext()) {
+			Fruit fTemp= itFru.next();
+			g.drawImage(fruitImage,(int)fTemp.getLocationInPixels().x(),(int)fTemp.getLocationInPixels().y(),2*r,2*r,this);
+			}
 		}
 
 
 	}
-
-
-
-
 
 	@Override
 	public void mouseClicked(MouseEvent m) {
@@ -143,7 +201,36 @@ public class GUI extends JFrame implements MouseListener {
 
 	}
 	//End of MouseListner implements methods
-
+	public void loadFile() {
+//		try read from the file (Copied code from elizabeth )
+        FileDialog fd = new FileDialog(this, "Open text file", FileDialog.LOAD);
+        fd.setFile("*.csv");
+        fd.setDirectory("C:");
+        fd.setFilenameFilter(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".csv");
+            }
+        });
+        fd.setVisible(true);
+        String folder = fd.getDirectory();
+        String fileName = fd.getFile();
+        try {
+            FileReader fr = new FileReader(folder + fileName);
+            BufferedReader br = new BufferedReader(fr);
+            String str = new String();
+            for (int i = 0; str != null; i = i + 1) {
+                str = br.readLine();
+                if (str != null) {
+                    System.out.println(str);
+                }
+            }
+            br.close();
+            fr.close();
+        } catch (IOException ex) {
+            System.out.print("Error reading file " + ex);
+        }
+	}
 	public static void main (String [] args) {
 		new GUI();	
 	}

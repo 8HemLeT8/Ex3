@@ -44,9 +44,9 @@ public class Map {
 	 double PolarX0=35.2023;
 	 double PolarY0=32.1057;
 
-	public  Point3D pixels2polar(Point3D temp) {
-		double newX = rangeXpolar*(temp.x()/rangeXpixels)+PolarX0;
-		double newY = rangeYpolar*(temp.y()/rangeYpixels)+PolarY0;
+	public  Point3D pixels2polar(int x,int y) {
+		double newX = rangeXpolar*(x/rangeXpixels)+PolarX0;
+		double newY = rangeYpolar*(y/rangeYpixels)+PolarY0;
 		return new Point3D(newX,newY,0);
 	}
 
@@ -57,10 +57,11 @@ public class Map {
 	}
 
 	public static void main(String[] args) {
-		Point3D m= new Point3D(1433,642,0);
+		int x=1433;
+		int y=642;
 		Point3D n= new Point3D(35.2123,32.1019,0);
 		Map p =new Map();
-		System.out.println((p.pixels2polar(m)));
+		System.out.println((p.pixels2polar(x,y)));
 		System.out.println((p.polar2pixels(n)));
 	}
 
